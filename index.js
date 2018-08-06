@@ -9,7 +9,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const through = require('through2');
-var PluginError = require('gulp-util').PluginError;
+const PluginError = require('gulp-util').PluginError;
 const path = require('path');
 
 const PLUGIN_NAME = 'gulp-include';
@@ -26,8 +26,6 @@ module.exports = user_opts => {
     // Read in the options, set the defaults
     let options = {
         // No source or dist defaults
-        src: '',
-        dist: '',
         includes: [],
         // Standard prefix is //@ but can be customized by the user
         prefix: '//@',
@@ -49,10 +47,8 @@ module.exports = user_opts => {
     let include = new RegExp(prefix + options.keyword + options.regex, 'g');
 
     return through.obj(function (file, encoding, callback) {
-
         // Check that the file exists and is not empty
         if (file.isNull()) {
-            // return callback(null, file);
             return callback(null);
         }
 
@@ -64,45 +60,29 @@ module.exports = user_opts => {
         }
 
         // Get file contents & path
-        let base = path.join(file.cwd, options.src);
-        let root = file.cwd;
-        // let requireList = []
-        let currentPath = path.relative(base, file.base).replace(/\\/g, '/').replace(/^(..*)$/, '$1/');
-
-        // let filename = file.path.replace(file.base, '');
-        // let currentFile = path.join(currentPath, filename).replace(/\\/g, '/');
+        let currentPath = path.relative(file.cwd, file.base).replace(/\\/g, '/').replace(/^(..*)$/, '$1/');
         let result = file.contents.toString();
 
         while (result.match(include)) {
             result = result.replace(include, function (full, match) {
 
                 // Find the matched file
-                let includeBase = path.join(file.cwd, options.dist);
                 // The current directory is a fallback if no include paths are found
-                let includePath = path.join(includeBase, currentPath);
+                let includePath = path.join(file.cwd, currentPath);
                 // Check if the file exists in the include paths provided by the user
                 options.includes.forEach((p, idx) => {
-
-                    if (fs.existsSync(path.join(base, p, match))) {
-
-                        includePath = path.join(base, p) + '/';
+                    if (fs.existsSync(path.join(file.cwd, p, match))) {
+                        includePath = path.join(file.cwd, p) + '/';
                     }
                 });
 
-
                 return glob.sync(includePath + match.replace(/\'|\"/g, '')).map(function (val) {
-
                     return fs.readFileSync(val).toString();
                 }).join('');
             });
         }
 
-
-
         file.contents = new Buffer(result);
-
-        // this.push(file);
         callback(null, file);
     });
-
 };
