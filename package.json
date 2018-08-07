@@ -1,5 +1,5 @@
 {
-  "name": "gulp-include",
+  "name": "gulp-custom-include",
   "version": "1.0.0",
   "description": "A gulp plugin for including a file's contents into another",
   "main": "index.js",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/castastrophe/gulp-include.git"
+    "url": "git+https://github.com/castastrophe/gulp-custom-include.git"
   },
   "keywords": [
     "gulp",
@@ -27,9 +27,9 @@
   "author": "castastrophe",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/castastrophe/gulp-include/issues"
+    "url": "https://github.com/castastrophe/gulp-custom-include/issues"
   },
-  "homepage": "https://github.com/castastrophe/gulp-include#readme",
+  "homepage": "https://github.com/castastrophe/gulp-custom-include#readme",
   "dependencies": {
     "fs": "0.0.1-security",
     "glob": "^7.1.2",
