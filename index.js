@@ -1,6 +1,6 @@
 /*
- * PROJECT: gulp-include
- * URL: https://github.com/castastrophe/gulp-include/
+ * PROJECT: gulp-custom-include
+ * URL: https://github.com/castastrophe/gulp-custom-include/
  * GNU GPL v3.0 License
  */
 
@@ -12,11 +12,11 @@ const through = require('through2');
 const PluginError = require('gulp-util').PluginError;
 const path = require('path');
 
-const PLUGIN_NAME = 'gulp-include';
+const PLUGIN_NAME = 'gulp-custom-include';
 
 /**
  * Foo description
- * @module gulp-include
+ * @module gulp-custom-include
  * @param {obj} options - The user's configurations
  */
 module.exports = user_opts => {
