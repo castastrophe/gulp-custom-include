@@ -58,7 +58,7 @@ Type: `Array`
 An array of paths to search for the included file.
 
 ```js
-var include = require("gulp-include");
+var include = require("gulp-custom-include");
 
 gulp.task("scripts", function() {
     return gulp
@@ -79,7 +79,7 @@ Type: `String`
 A way to optionally customize the prefix that triggers the include; default is `//@`.
 
 ```js
-var include = require("gulp-include");
+var include = require("gulp-custom-include");
 
 gulp.task("scripts", function() {
     return gulp
@@ -106,7 +106,7 @@ Type: `String`
 A way to optionally customize the keyword that triggers the include; default allows for either `include` or `replace`.
 
 ```js
-var include = require("gulp-include");
+var include = require("gulp-custom-include");
 
 gulp.task("scripts", function() {
     return gulp
@@ -133,7 +133,7 @@ Type: `String`
 A way to optionally customize the regex which facilitates the capturing of the filename from the include string. This parses everything that appears after the prefix and the keyword. The default is: `\\([\\s\'\"]*([a-z\.]*)[\\s\'\"]*\\)`.
 
 ```js
-var include = require("gulp-include");
+var include = require("gulp-custom-include");
 
 gulp.task("scripts", function() {
     return gulp
