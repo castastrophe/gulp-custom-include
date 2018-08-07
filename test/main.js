@@ -14,7 +14,7 @@ let fixtures = glob => {
     return path.join(__dirname, 'fixtures', glob);
 }
 
-describe('gulp-include', function () {
+describe('gulp-custom-include', function () {
 
     describe('include()', function () {
         it('should ignore null files', function (done) {
@@ -32,7 +32,7 @@ describe('gulp-include', function () {
                 })
                 .pipe(include('test.js'))
                 .once('error', function (err) {
-                    err.message.should.eql('gulp-include: Streams not supported');
+                    err.message.should.eql('gulp-custom-include: Streams not supported');
                     done();
                 });
         });
