@@ -1,4 +1,4 @@
-# gulp-custom-include [![Build Status][status-img]][status] ![Dependencies][deps] ![Downloads][downloads]
+# gulp-custom-include
 
 > Gulp plugin for including files
 
