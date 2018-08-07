@@ -1,4 +1,4 @@
-# gulp-pug [![Build Status][status-img]][status] ![Dependencies][deps] ![Downloads][downloads]
+# gulp-custom-include [![Build Status][status-img]][status] ![Dependencies][deps] ![Downloads][downloads]
 
 > Gulp plugin for including files
 
@@ -8,13 +8,13 @@ The include plugin searches the provided file for a standardized format and if f
 
 Install package with NPM and add it to your development dependencies:
 
-`npm install --save-dev gulp-include`
+`npm install --save-dev gulp-custom-include`
 
 ## Information
 
 <table>
 <tr>
-<td>Package</td><td>gulp-include</td>
+<td>Package</td><td>gulp-custom-include</td>
 </tr>
 <tr>
 <td>Description</td>
@@ -29,7 +29,7 @@ Install package with NPM and add it to your development dependencies:
 ## Usage
 
 ```js
-var include = require("gulp-include");
+var include = require("gulp-custom-include");
 
 gulp.task("scripts", function() {
     return gulp
