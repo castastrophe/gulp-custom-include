@@ -9,8 +9,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const through = require('through2');
-const PluginError = require('plugin-error');
-const log = require('fancy-log');
+const PluginError = require('gulp-util').PluginError;
 const path = require('path');
 
 const PLUGIN_NAME = 'gulp-custom-include';
@@ -23,12 +22,10 @@ const PLUGIN_NAME = 'gulp-custom-include';
 module.exports = user_opts => {
 
     const regexSafe = string => string.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    let found = [];
 
     // Read in the options, set the defaults
     let options = {
         // No source or dist defaults
-        src: '',
         includes: [],
         // Standard prefix is //@ but can be customized by the user
         prefix: '//@',
@@ -37,8 +34,7 @@ module.exports = user_opts => {
         keyword: '(?:include|replace)',
         // Allow user to pass in their own custom regex
         // Default looks for the filename inside parenthesis with or without spaces or quotations
-        regex: '\\([\\s\'\"]*([a-z-\.]*)[\\s\'\"]*\\)',
-        unique: true
+        regex: '\\([\\s\'\"]*([a-z\.]*)[\\s\'\"]*\\)'
     };
 
     // Combine the options object with the user inputs
@@ -50,56 +46,57 @@ module.exports = user_opts => {
     // Build the regular expression for capturing the file name
     let include = new RegExp(prefix + options.keyword + options.regex, 'g');
 
-    return through.obj(function (file, encoding, callback) {
+    return through.obj(function(file, encoding, callback) {
         // Check that the file exists and is not empty
         if (file.isNull()) {
-            callback(null, file);
-            return;
+            return callback(null);
         }
 
         // Return error if stream provided
         if (file.isStream()) {
             // file.contents is a Stream - https://nodejs.org/api/stream.html
-            callback(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
-            return;
+            this.emit('error', new PluginError(PLUGIN_NAME, PLUGIN_NAME + ': Streams not supported'));
+            return callback(null, file);
         }
 
-        // If
-        if (!options.src) {
+        // Check that the source exists, default to relative file path if not
+        if (typeof options.src === "undefined") {
             options.src = file.cwd;
         }
-        // Get file contents & path
-        let currentPath = path.relative(options.src, file.base).replace(/\\/g, '/').replace(/^(..*)$/, '$1/');
+
+        // Get file contents
         let result = file.contents.toString();
 
-        // Find the matched file
-        // The current directory is a fallback if no include paths are found
-        let includePath = path.join(options.src, currentPath);
-
         while (result.match(include)) {
-            result = result.replace(include, (full, match) => {
+            result = result.replace(include, function(full, match) {
+                // This variable identifies if the file was found
+                let found = false;
 
+                // Find the matched file
+                // The current directory is a fallback if no include paths are found
+                let includePath = file.cwd;
                 // Check if the file exists in the include paths provided by the user
                 options.includes.forEach((p, idx) => {
                     if (fs.existsSync(path.join(options.src, p, match))) {
+                        found = true;
                         includePath = path.join(options.src, p) + '/';
                     }
                 });
 
-                if ((options.unique && found.indexOf(match) < 0) || !options.unique) {
-                    found.push(match);
-                    // log.info(match + " included");
-                    return glob.sync(includePath + match.replace(/\'|\"/g, '')).map(function (val) {
-                        return fs.readFileSync(val).toString();
-                    }).join('');
-                } else {
-                    // log.info(match + " was duplicate");
-                    // Return an empty string if the include is already done
-                    return glob.sync(includePath + match.replace(/\'|\"/g, '')).map(function (val) {
-                        return '// ' + match + ' was already included';
-                    }).join('');
+                // Check the current path last if not found above
+                if (!found && fs.existsSync(path.join(file.cwd, match))) {
+                    found = true;
+                    includePath = path.join(file.cwd) + '/';
                 }
-            });
+
+                if (!found) {
+                    this.emit('error', new PluginError(PLUGIN_NAME, 'File not found: ' + match));
+                }
+
+                return glob.sync(includePath + match.replace(/\'|\"/g, '')).map(function(val) {
+                    return fs.readFileSync(val).toString();
+                }).join('');
+            }.bind(this));
         }
 
         file.contents = new Buffer(result);
